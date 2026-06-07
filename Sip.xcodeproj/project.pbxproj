@@ -416,6 +416,7 @@
 				DEVELOPMENT_TEAM = V5YAAQ45Q2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Sip uses the camera to photograph your coffee drinks.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Sip uses your location to find coffee shops near you.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -449,6 +450,7 @@
 				DEVELOPMENT_TEAM = V5YAAQ45Q2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Sip uses the camera to photograph your coffee drinks.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Sip uses your location to find coffee shops near you.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
