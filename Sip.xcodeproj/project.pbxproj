@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		098D06872FD4E75A00230C4E /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 098D06862FD4E75A00230C4E /* GooglePlaces */; };
+		098D06892FD4E75A00230C4E /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 098D06882FD4E75A00230C4E /* GooglePlacesSwift */; };
+		098D068C2FD4E80C00230C4E /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 098D068B2FD4E80C00230C4E /* GoogleMaps */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		098D063B2FD4E3B600230C4E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +58,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				098D06872FD4E75A00230C4E /* GooglePlaces in Frameworks */,
+				098D06892FD4E75A00230C4E /* GooglePlacesSwift in Frameworks */,
+				098D068C2FD4E80C00230C4E /* GoogleMaps in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +121,9 @@
 			);
 			name = Sip;
 			packageProductDependencies = (
+				098D06862FD4E75A00230C4E /* GooglePlaces */,
+				098D06882FD4E75A00230C4E /* GooglePlacesSwift */,
+				098D068B2FD4E80C00230C4E /* GoogleMaps */,
 			);
 			productName = Sip;
 			productReference = 098D062D2FD4E3B300230C4E /* Sip.app */;
@@ -195,6 +207,10 @@
 			);
 			mainGroup = 098D06242FD4E3B300230C4E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				098D06852FD4E75A00230C4E /* XCRemoteSwiftPackageReference "ios-places-sdk" */,
+				098D068A2FD4E80C00230C4E /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 098D062E2FD4E3B300230C4E /* Products */;
 			projectDirPath = "";
@@ -400,6 +416,7 @@
 				DEVELOPMENT_TEAM = V5YAAQ45Q2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Sip uses your location to find coffee shops near you.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -432,6 +449,7 @@
 				DEVELOPMENT_TEAM = V5YAAQ45Q2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Sip uses your location to find coffee shops near you.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -578,6 +596,43 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		098D06852FD4E75A00230C4E /* XCRemoteSwiftPackageReference "ios-places-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-places-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.14.0;
+			};
+		};
+		098D068A2FD4E80C00230C4E /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.14.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		098D06862FD4E75A00230C4E /* GooglePlaces */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 098D06852FD4E75A00230C4E /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
+			productName = GooglePlaces;
+		};
+		098D06882FD4E75A00230C4E /* GooglePlacesSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 098D06852FD4E75A00230C4E /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
+			productName = GooglePlacesSwift;
+		};
+		098D068B2FD4E80C00230C4E /* GoogleMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 098D068A2FD4E80C00230C4E /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
+			productName = GoogleMaps;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 098D06252FD4E3B300230C4E /* Project object */;
 }
