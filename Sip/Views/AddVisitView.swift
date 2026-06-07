@@ -97,7 +97,9 @@ struct AddVisitView: View {
                 }
             }
             .confirmationDialog("Add Photo", isPresented: $showPhotoOptions) {
-                Button("Take Photo") { showCamera = true }
+                if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                    Button("Take Photo") { showCamera = true }
+                }
                 Button("Choose from Library") { showLibrary = true }
                 Button("Cancel", role: .cancel) {}
             }
