@@ -4,16 +4,19 @@ A SwiftUI iOS app for discovering coffee shops, keeping a personal visit journal
 
 ## Features
 
-- **Map** — Browse nearby coffee shops on a Google Map centered on your current location, with brown markers for each café
+- **Map** — Browse nearby coffee shops on a Google Map centered on your current location, with brown markers for each café. Automatically re-searches as you pan to new areas.
 - **Search** — Find coffee shops by name with Google Places autocomplete
 - **Shop Details** — View ratings, hours, address, phone, website, and photos for any shop
-- **Favorites** — Save shops to a persistent favorites list
-- **Visit Journal** — Log visits with date, rating (1–5 stars), drink name, notes, and optional taste scores (acidity, body, roast)
+- **Open Now Filter** — Toggle to show only currently-open shops
+- **Favorites** — Save shops to a persistent favorites list, sortable by date, name, or city
+- **Share** — Share shop details and an Apple Maps link via the system share sheet
+- **Visit Journal** — Log visits with date, rating (1–5 stars), drink name, notes, and optional taste scores (acidity, body, roast). Stats header shows total visits, average rating, and most-visited shop.
+- **Coffee Passport** — Earn badges for milestones like visiting 5 cities, logging taste notes, or trying 10 different drinks. Progress bars show how close you are to each badge.
 - **City Tracker** — Automatically tracks which cities you've visited coffee shops in via reverse geocoding
 
 ## Requirements
 
-- Xcode 15+
+- Xcode 16+
 - iOS 17+
 - A Google Cloud project with the **Maps SDK for iOS** and **Places API (New)** enabled
 
@@ -27,15 +30,19 @@ A SwiftUI iOS app for discovering coffee shops, keeping a personal visit journal
 
 3. Configure your API key — edit `Sip/Secrets.plist` and replace `YOUR_API_KEY_HERE` with your Google API key. This file is gitignored.
 
-4. Build and run on a simulator or device.
+4. Add the location usage description in your target's Info tab:
+   - Key: `Privacy - Location When In Use Usage Description`
+   - Value: `Sip uses your location to find coffee shops near you.`
+
+5. Build and run on a simulator or device.
 
 ## Architecture
 
 | Layer | Description |
 |-------|-------------|
-| **Models** | SwiftData `@Model` classes — `FavoriteShop`, `VisitEntry`, `CityVisit` |
-| **Views** | SwiftUI views organized by feature — Map, Favorites, Journal, Cities, Shop Detail |
-| **ViewModels** | `@Observable` classes driving map state and search |
+| **Models** | SwiftData `@Model` classes — `FavoriteShop`, `VisitEntry`, `CityVisit`. Badge logic computed from visit data. |
+| **Views** | SwiftUI views organized by feature — Map, Favorites, Journal, Progress, Shop Detail |
+| **ViewModels** | `@Observable` classes driving map state, search, and filtering |
 | **Services** | `PlacesService` (nearby search, detail, autocomplete, photos), `LocationService` (CLLocationManager wrapper), `SecretsManager` (plist reader) |
 
 ## Project Structure
@@ -43,19 +50,21 @@ A SwiftUI iOS app for discovering coffee shops, keeping a personal visit journal
 ```
 Sip/
 ├── SipApp.swift            # App entry point, SDK initialization, model container
-├── ContentView.swift       # Tab bar (Map, Favorites, Journal, Cities)
+├── ContentView.swift       # Tab bar (Map, Favorites, Journal, Progress)
 ├── Models/
-│   └── Models.swift        # SwiftData models
+│   ├── Models.swift        # SwiftData models
+│   └── Badge.swift         # Badge definitions and computation logic
 ├── ViewModels/
-│   └── MapViewModel.swift  # Map state, search, marker management
+│   └── MapViewModel.swift  # Map state, search, markers, filtering, debounced re-search
 ├── Views/
-│   ├── MapTab.swift
+│   ├── MapTab.swift        # Map + search overlay + Open Now filter
 │   ├── GoogleMapView.swift # UIViewRepresentable GMSMapView wrapper
-│   ├── SearchBar.swift
-│   ├── ShopDetailView.swift
-│   ├── AddVisitView.swift
-│   ├── FavoritesView.swift
-│   ├── JournalView.swift
+│   ├── SearchBar.swift     # Search bar + autocomplete results list
+│   ├── ShopDetailView.swift # Photos, hours, rating, favorite, share, log visit
+│   ├── AddVisitView.swift  # Journal entry form with taste notes
+│   ├── FavoritesView.swift # Saved shops with sort options
+│   ├── JournalView.swift   # Visit history with stats header
+│   ├── ProgressTab.swift   # Coffee Passport badges + city tracker
 │   └── CityTrackerView.swift
 ├── Services/
 │   ├── PlacesService.swift
