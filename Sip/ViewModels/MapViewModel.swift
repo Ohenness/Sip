@@ -10,15 +10,20 @@ final class MapViewModel {
     var searchText = ""
     var searchResults: [AutocompleteResult] = []
     var isLoading = false
+    var showOpenOnly = false {
+        didSet { applyFilter() }
+    }
 
     private let locationService = LocationService()
     private let placesService = PlacesService()
     private var hasInitiallyFocused = false
+    private var lastSearchLocation: CLLocationCoordinate2D?
+    private var searchTask: Task<Void, Never>?
+    private var allShops: [CoffeeShop] = []
 
     func startLocationUpdates() async {
         locationService.requestPermission()
 
-        // Poll until we get a location
         while locationService.currentLocation == nil {
             try? await Task.sleep(for: .milliseconds(200))
         }
@@ -30,20 +35,43 @@ final class MapViewModel {
         }
     }
 
+    func onCameraIdle(center: CLLocationCoordinate2D) {
+        // Only re-search if moved >500m from last search
+        if let last = lastSearchLocation {
+            let lastLoc = CLLocation(latitude: last.latitude, longitude: last.longitude)
+            let newLoc = CLLocation(latitude: center.latitude, longitude: center.longitude)
+            guard newLoc.distance(from: lastLoc) > 500 else { return }
+        }
+
+        // Debounce: cancel previous and wait 1s
+        searchTask?.cancel()
+        searchTask = Task {
+            try? await Task.sleep(for: .seconds(1))
+            guard !Task.isCancelled else { return }
+            await searchNearby(location: center)
+        }
+    }
+
     func searchNearby(location: CLLocationCoordinate2D) async {
         isLoading = true
         defer { isLoading = false }
+        lastSearchLocation = location
         do {
-            let shops = try await placesService.searchNearbyCoffeeShops(location: location)
-            markers = shops.map { shop in
-                let marker = GMSMarker(position: shop.coordinate)
-                marker.title = shop.name
-                marker.userData = shop.id
-                marker.icon = GMSMarker.markerImage(with: .brown)
-                return marker
-            }
+            allShops = try await placesService.searchNearbyCoffeeShops(location: location)
+            applyFilter()
         } catch {
             print("Nearby search failed: \(error)")
+        }
+    }
+
+    private func applyFilter() {
+        let filtered = showOpenOnly ? allShops.filter { $0.isOpen == true } : allShops
+        markers = filtered.map { shop in
+            let marker = GMSMarker(position: shop.coordinate)
+            marker.title = shop.name
+            marker.userData = shop.id
+            marker.icon = GMSMarker.markerImage(with: .brown)
+            return marker
         }
     }
 
@@ -66,7 +94,6 @@ final class MapViewModel {
         searchResults = []
         selectedPlaceId = result.id
 
-        // Fetch detail to move camera to the location
         Task {
             do {
                 let detail = try await placesService.fetchDetail(placeId: result.id)

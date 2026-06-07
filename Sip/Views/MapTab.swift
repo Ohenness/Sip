@@ -14,24 +14,47 @@ struct MapTab: View {
                         viewModel.selectedPlaceId = placeId
                     }
                     return false
+                },
+                onCameraIdle: { center in
+                    viewModel.onCameraIdle(center: center)
                 }
             )
             .ignoresSafeArea()
 
-            SearchBar(text: $viewModel.searchText, onCommit: viewModel.search)
-                .padding(.top, 8)
-                .padding(.horizontal)
+            VStack(spacing: 8) {
+                SearchBar(text: $viewModel.searchText, onCommit: viewModel.search)
 
-            if !viewModel.searchResults.isEmpty {
-                SearchResultsList(
-                    results: viewModel.searchResults,
-                    onSelect: { result in
-                        viewModel.selectSearchResult(result)
+                HStack {
+                    Button(action: { viewModel.showOpenOnly.toggle() }) {
+                        Label("Open Now", systemImage: viewModel.showOpenOnly ? "checkmark.circle.fill" : "clock")
+                            .font(.caption)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(.regularMaterial)
+                            .overlay(viewModel.showOpenOnly ? Color.green.opacity(0.2) : Color.clear)
+                            .clipShape(Capsule())
                     }
-                )
-                .padding(.top, 56)
-                .padding(.horizontal)
+                    .buttonStyle(.plain)
+                    Spacer()
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .padding(6)
+                            .background(.regularMaterial)
+                            .clipShape(Circle())
+                    }
+                }
+
+                if !viewModel.searchResults.isEmpty {
+                    SearchResultsList(
+                        results: viewModel.searchResults,
+                        onSelect: { result in
+                            viewModel.selectSearchResult(result)
+                        }
+                    )
+                }
             }
+            .padding(.top, 8)
+            .padding(.horizontal)
         }
         .sheet(item: $viewModel.selectedPlaceId) { placeId in
             ShopDetailView(placeId: placeId)

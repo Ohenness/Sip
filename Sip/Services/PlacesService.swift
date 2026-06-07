@@ -38,16 +38,16 @@ final class PlacesService {
         let placeProperties = [GMSPlaceProperty.placeID, GMSPlaceProperty.name, GMSPlaceProperty.coordinate, GMSPlaceProperty.rating, GMSPlaceProperty.businessStatus].map { $0.rawValue }
 
         let circularLocation = GMSPlaceCircularLocationOption(location, radius)
-        var request = GMSPlaceSearchNearbyRequest(locationRestriction: circularLocation, placeProperties: placeProperties)
+        let request = GMSPlaceSearchNearbyRequest(locationRestriction: circularLocation, placeProperties: placeProperties)
         request.includedTypes = ["cafe", "coffee_shop"]
 
         return try await withCheckedThrowingContinuation { continuation in
-            client.searchNearby(with: request, callback: { results, error in
+            client.searchNearby(with: request, completion: { response, error in
                 if let error {
                     continuation.resume(throwing: error)
                     return
                 }
-                let shops = (results as? [GMSPlace] ?? []).map { place in
+                let shops = (response?.places ?? []).map { place in
                     CoffeeShop(
                         id: place.placeID ?? "",
                         name: place.name ?? "Unknown",

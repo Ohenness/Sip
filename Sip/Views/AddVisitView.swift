@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import CoreLocation
+import MapKit
 
 struct AddVisitView: View {
     let placeId: String
@@ -80,12 +81,13 @@ struct AddVisitView: View {
 
         // Update city tracker via reverse geocoding
         Task {
-            let geocoder = CLGeocoder()
             let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-            if let placemark = try? await geocoder.reverseGeocodeLocation(location).first,
-               let city = placemark.locality {
+            guard let request = MKReverseGeocodingRequest(location: location) else { return }
+            if let mapItems = try? await request.mapItems,
+               let mapItem = mapItems.first,
+               let city = mapItem.address?.fullAddress.components(separatedBy: ", ").first {
                 entry.city = city
-                updateCityTracker(city: city, country: placemark.country)
+                updateCityTracker(city: city, country: nil)
             }
         }
         dismiss()

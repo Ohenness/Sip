@@ -6,6 +6,7 @@ struct GoogleMapView: UIViewRepresentable {
     @Binding var markers: [GMSMarker]
     var showsUserLocation: Bool = true
     var onMarkerTap: ((GMSMarker) -> Bool)?
+    var onCameraIdle: ((CLLocationCoordinate2D) -> Void)?
 
     func makeUIView(context: Context) -> GMSMapView {
         let options = GMSMapViewOptions()
@@ -26,18 +27,24 @@ struct GoogleMapView: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(onMarkerTap: onMarkerTap)
+        Coordinator(onMarkerTap: onMarkerTap, onCameraIdle: onCameraIdle)
     }
 
     class Coordinator: NSObject, GMSMapViewDelegate {
         var onMarkerTap: ((GMSMarker) -> Bool)?
+        var onCameraIdle: ((CLLocationCoordinate2D) -> Void)?
 
-        init(onMarkerTap: ((GMSMarker) -> Bool)?) {
+        init(onMarkerTap: ((GMSMarker) -> Bool)?, onCameraIdle: ((CLLocationCoordinate2D) -> Void)?) {
             self.onMarkerTap = onMarkerTap
+            self.onCameraIdle = onCameraIdle
         }
 
         func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
             onMarkerTap?(marker) ?? false
+        }
+
+        func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
+            onCameraIdle?(position.target)
         }
     }
 }

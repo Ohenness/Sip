@@ -1,10 +1,28 @@
 import SwiftUI
 import SwiftData
 
+enum FavoriteSortOption: String, CaseIterable {
+    case dateAdded = "Date Added"
+    case alphabetical = "A–Z"
+    case city = "City"
+}
+
 struct FavoritesView: View {
     @Query(sort: \FavoriteShop.dateAdded, order: .reverse) private var favorites: [FavoriteShop]
     @Environment(\.modelContext) private var modelContext
     @State private var selectedPlaceId: String?
+    @State private var sortOption: FavoriteSortOption = .dateAdded
+
+    private var sortedFavorites: [FavoriteShop] {
+        switch sortOption {
+        case .dateAdded:
+            return favorites
+        case .alphabetical:
+            return favorites.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        case .city:
+            return favorites.sorted { ($0.city ?? "zzz") < ($1.city ?? "zzz") }
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -13,7 +31,7 @@ struct FavoritesView: View {
                     ContentUnavailableView("No Favorites Yet", systemImage: "heart", description: Text("Tap the heart icon on a shop to save it here."))
                 } else {
                     List {
-                        ForEach(favorites) { shop in
+                        ForEach(sortedFavorites) { shop in
                             Button(action: { selectedPlaceId = shop.placeId }) {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(shop.name)
@@ -35,6 +53,19 @@ struct FavoritesView: View {
                 }
             }
             .navigationTitle("Favorites")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        ForEach(FavoriteSortOption.allCases, id: \.self) { option in
+                            Button(action: { sortOption = option }) {
+                                Label(option.rawValue, systemImage: sortOption == option ? "checkmark" : "")
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "arrow.up.arrow.down")
+                    }
+                }
+            }
             .sheet(item: $selectedPlaceId) { placeId in
                 ShopDetailView(placeId: placeId)
             }
@@ -42,8 +73,9 @@ struct FavoritesView: View {
     }
 
     private func delete(at offsets: IndexSet) {
+        let sorted = sortedFavorites
         for i in offsets {
-            modelContext.delete(favorites[i])
+            modelContext.delete(sorted[i])
         }
     }
 }
