@@ -161,5 +161,6 @@ struct ShopDetailView: View {
             let fav = FavoriteShop(placeId: detail.placeId, name: detail.name, latitude: detail.coordinate.latitude, longitude: detail.coordinate.longitude)
             modelContext.insert(fav)
         }
+        try? modelContext.save()
     }
 }
