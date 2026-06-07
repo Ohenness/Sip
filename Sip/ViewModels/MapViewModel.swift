@@ -4,7 +4,7 @@ import CoreLocation
 
 @Observable
 final class MapViewModel {
-    var camera = GMSCameraPosition(latitude: 37.7749, longitude: -122.4194, zoom: 14)
+    var camera: GMSCameraPosition?
     var markers: [GMSMarker] = []
     var selectedPlaceId: String?
     var searchText = ""

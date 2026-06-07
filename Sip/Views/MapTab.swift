@@ -7,7 +7,7 @@ struct MapTab: View {
     var body: some View {
         ZStack(alignment: .top) {
             GoogleMapView(
-                camera: $viewModel.camera,
+                cameraUpdate: viewModel.camera,
                 markers: $viewModel.markers,
                 onMarkerTap: { marker in
                     if let placeId = marker.userData as? String {
