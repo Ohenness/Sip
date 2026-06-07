@@ -22,8 +22,9 @@ struct AddVisitView: View {
     @State private var includeTasteNotes = false
 
     @State private var photos: [UIImage] = []
-    @State private var selectedItems: [PhotosPickerItem] = []
+    @State private var showPhotoOptions = false
     @State private var showCamera = false
+    @State private var showLibrary = false
 
     var body: some View {
         NavigationStack {
@@ -42,34 +43,30 @@ struct AddVisitView: View {
                 }
 
                 Section("Photos") {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(photos.indices, id: \.self) { i in
-                                Image(uiImage: photos[i])
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 80, height: 80)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    .overlay(alignment: .topTrailing) {
-                                        Button(action: { photos.remove(at: i) }) {
-                                            Image(systemName: "xmark.circle.fill")
-                                                .font(.caption)
-                                                .foregroundStyle(.white, .red)
+                    if !photos.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(photos.indices, id: \.self) { i in
+                                    Image(uiImage: photos[i])
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 80, height: 80)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .overlay(alignment: .topTrailing) {
+                                            Button(action: { photos.remove(at: i) }) {
+                                                Image(systemName: "xmark.circle.fill")
+                                                    .font(.caption)
+                                                    .foregroundStyle(.white, .red)
+                                            }
+                                            .offset(x: 4, y: -4)
                                         }
-                                        .offset(x: 4, y: -4)
-                                    }
+                                }
                             }
                         }
                     }
 
-                    HStack {
-                        PhotosPicker(selection: $selectedItems, maxSelectionCount: 5, matching: .images) {
-                            Label("Library", systemImage: "photo.on.rectangle")
-                        }
-                        Spacer()
-                        Button(action: { showCamera = true }) {
-                            Label("Camera", systemImage: "camera")
-                        }
+                    Button(action: { showPhotoOptions = true }) {
+                        Label("Add Photo", systemImage: "plus.circle")
                     }
                 }
 
@@ -99,23 +96,30 @@ struct AddVisitView: View {
                         .bold()
                 }
             }
-            .onChange(of: selectedItems) {
-                Task {
-                    for item in selectedItems {
-                        if let data = try? await item.loadTransferable(type: Data.self),
-                           let image = UIImage(data: data) {
-                            photos.append(image)
-                        }
-                    }
-                    selectedItems = []
-                }
+            .confirmationDialog("Add Photo", isPresented: $showPhotoOptions) {
+                Button("Take Photo") { showCamera = true }
+                Button("Choose from Library") { showLibrary = true }
+                Button("Cancel", role: .cancel) {}
             }
             .fullScreenCover(isPresented: $showCamera) {
-                CameraView(image: Binding(get: { nil }, set: { img in
-                    if let img { photos.append(img) }
-                }))
+                CameraView { image in
+                    photos.append(image)
+                }
                 .ignoresSafeArea()
             }
+            .photosPicker(isPresented: $showLibrary, selection: Binding(
+                get: { [] as [PhotosPickerItem] },
+                set: { items in
+                    Task {
+                        for item in items {
+                            if let data = try? await item.loadTransferable(type: Data.self),
+                               let image = UIImage(data: data) {
+                                photos.append(image)
+                            }
+                        }
+                    }
+                }
+            ), maxSelectionCount: 5, matching: .images)
         }
     }
 
@@ -160,7 +164,7 @@ struct AddVisitView: View {
 }
 
 struct CameraView: UIViewControllerRepresentable {
-    @Binding var image: UIImage?
+    var onCapture: (UIImage) -> Void
     @Environment(\.dismiss) private var dismiss
 
     func makeUIViewController(context: Context) -> UIImagePickerController {
@@ -184,7 +188,9 @@ struct CameraView: UIViewControllerRepresentable {
         }
 
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            parent.image = info[.originalImage] as? UIImage
+            if let image = info[.originalImage] as? UIImage {
+                parent.onCapture(image)
+            }
             parent.dismiss()
         }
 
