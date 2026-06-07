@@ -62,6 +62,23 @@ struct JournalView: View {
                                     }
                                     .padding(.top, 2)
                                 }
+
+                                if !entry.photoFileNames.isEmpty {
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        HStack(spacing: 6) {
+                                            ForEach(entry.photoFileNames, id: \.self) { fileName in
+                                                if let img = PhotoStorage.load(fileName) {
+                                                    Image(uiImage: img)
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: 60, height: 60)
+                                                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                                                }
+                                            }
+                                        }
+                                    }
+                                    .padding(.top, 4)
+                                }
                             }
                             .padding(.vertical, 4)
                         }

@@ -32,8 +32,9 @@ final class VisitEntry {
     var acidity: Int?
     var body: Int?
     var roast: Int?
+    var photoFileNames: [String]
 
-    init(placeId: String, shopName: String, city: String? = nil, visitDate: Date = .now, rating: Int = 3, drinkName: String? = nil, notes: String? = nil, acidity: Int? = nil, body: Int? = nil, roast: Int? = nil) {
+    init(placeId: String, shopName: String, city: String? = nil, visitDate: Date = .now, rating: Int = 3, drinkName: String? = nil, notes: String? = nil, acidity: Int? = nil, body: Int? = nil, roast: Int? = nil, photoFileNames: [String] = []) {
         self.placeId = placeId
         self.shopName = shopName
         self.city = city
@@ -44,6 +45,7 @@ final class VisitEntry {
         self.acidity = acidity
         self.body = body
         self.roast = roast
+        self.photoFileNames = photoFileNames
     }
 }
 
