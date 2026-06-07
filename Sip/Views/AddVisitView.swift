@@ -141,7 +141,12 @@ struct AddVisitView: View {
             photoFileNames: fileNames
         )
         modelContext.insert(entry)
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+            print("✅ Visit saved successfully")
+        } catch {
+            print("❌ Failed to save visit: \(error)")
+        }
 
         Task {
             let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)

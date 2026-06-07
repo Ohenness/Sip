@@ -161,6 +161,10 @@ struct ShopDetailView: View {
             let fav = FavoriteShop(placeId: detail.placeId, name: detail.name, latitude: detail.coordinate.latitude, longitude: detail.coordinate.longitude)
             modelContext.insert(fav)
         }
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            print("❌ Failed to save favorite: \(error)")
+        }
     }
 }
