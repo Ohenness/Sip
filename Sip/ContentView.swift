@@ -15,9 +15,9 @@ struct ContentView: View {
                 .tabItem {
                     Label("Journal", systemImage: "book")
                 }
-            CityTrackerView()
+            ProgressTab()
                 .tabItem {
-                    Label("Cities", systemImage: "building.2")
+                    Label("Progress", systemImage: "trophy")
                 }
         }
     }
