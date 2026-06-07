@@ -30,18 +30,18 @@ struct ShopDetailView: View {
             .navigationTitle(detail?.name ?? "Shop Detail")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    if let detail {
+                        let shareText = "\(detail.name)\n\(detail.address ?? "")\nhttps://maps.apple.com/?q=\(detail.name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
+                        ShareLink(item: shareText) {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
-                    HStack(spacing: 12) {
-                        if let detail {
-                            let shareText = "\(detail.name)\n\(detail.address ?? "")\nhttps://maps.apple.com/?q=\(detail.name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
-                            ShareLink(item: shareText) {
-                                Image(systemName: "square.and.arrow.up")
-                            }
-                        }
-                        Button(action: toggleFavorite) {
-                            Image(systemName: isFavorite ? "heart.fill" : "heart")
-                                .foregroundStyle(isFavorite ? .red : .secondary)
-                        }
+                    Button(action: toggleFavorite) {
+                        Image(systemName: isFavorite ? "heart.fill" : "heart")
+                            .foregroundStyle(isFavorite ? .red : .secondary)
                     }
                 }
             }

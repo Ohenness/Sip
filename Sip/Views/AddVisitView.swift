@@ -141,6 +141,7 @@ struct AddVisitView: View {
             photoFileNames: fileNames
         )
         modelContext.insert(entry)
+        try? modelContext.save()
 
         Task {
             let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
@@ -150,6 +151,7 @@ struct AddVisitView: View {
                let city = mapItem.address?.fullAddress.components(separatedBy: ", ").first {
                 entry.city = city
                 updateCityTracker(city: city, country: nil)
+                try? modelContext.save()
             }
         }
         dismiss()
